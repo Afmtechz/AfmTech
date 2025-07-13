@@ -197,6 +197,11 @@ Contributions are welcome! Please feel free to submit pull requests or open issu
 - Performance improvements
 - Documentation updates
 
+## 👤 Author
+
+**Sohan**
+🌐 [AFM Tech](https://afmtechz.github.io/AfmTech/)
+
 ## 📧 Contact
 
 For questions or support regarding this website:
