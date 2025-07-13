@@ -211,11 +211,54 @@
             border-radius: 25px;
             font-size: 0.9rem;
             transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
         }
 
         .download-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 4px 15px rgba(79, 195, 247, 0.4);
+        }
+
+        .download-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(45deg, #4fc3f7, #29b6f6);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(79, 195, 247, 0.4);
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
         }
 
         /* Contact Section */
@@ -400,6 +443,11 @@
         </div>
     </nav>
 
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <span id="notificationText"></span>
+    </div>
+
     <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="hero-content">
@@ -417,11 +465,17 @@
             
             <div class="project-grid">
                 <div class="project-card">
-                    <div class="project-image">📱</div>
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1590856029826-c7a73142bbf1?q=80&w=873&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Surveillance System" style="width: 400px; height: 200px;" />
+                    </div>
                     <div class="project-content">
-                        <h3>Mobile App Templates</h3>
-                        <p>Complete mobile application templates with modern UI/UX design, ready to customize and deploy.</p>
-                        <a href="#" class="download-btn">Download from Drive</a>
+                        <h3>AI-powered real-time surveillance system</h3>
+                        <p>AI-powered real-time surveillance system with secure user management and simple UI.
+                        </p>
+                        <button class="download-btn" onclick="downloadProject('mobile-templates')">
+                            <div class="loading" id="loading-mobile-templates"></div>
+                            <span>Download from Drive</span>
+                        </button>
                     </div>
                 </div>
 
@@ -430,7 +484,10 @@
                     <div class="project-content">
                         <h3>Web Development Kits</h3>
                         <p>Professional web development starter kits with responsive design and modern frameworks.</p>
-                        <a href="#" class="download-btn">Download from Drive</a>
+                        <button class="download-btn" onclick="downloadProject('web-kits')">
+                            <div class="loading" id="loading-web-kits"></div>
+                            <span>Download from Drive</span>
+                        </button>
                     </div>
                 </div>
 
@@ -439,7 +496,10 @@
                     <div class="project-content">
                         <h3>Design Resources</h3>
                         <p>High-quality design assets, icons, and templates for creative projects and branding.</p>
-                        <a href="#" class="download-btn">Download from Drive</a>
+                        <button class="download-btn" onclick="downloadProject('design-resources')">
+                            <div class="loading" id="loading-design-resources"></div>
+                            <span>Download from Drive</span>
+                        </button>
                     </div>
                 </div>
 
@@ -448,7 +508,10 @@
                     <div class="project-content">
                         <h3>Development Tools</h3>
                         <p>Essential development tools and utilities to streamline your workflow and boost productivity.</p>
-                        <a href="#" class="download-btn">Download from Drive</a>
+                        <button class="download-btn" onclick="downloadProject('dev-tools')">
+                            <div class="loading" id="loading-dev-tools"></div>
+                            <span>Download from Drive</span>
+                        </button>
                     </div>
                 </div>
 
@@ -457,7 +520,10 @@
                     <div class="project-content">
                         <h3>Data Analytics</h3>
                         <p>Data visualization templates and analytics tools for business intelligence and reporting.</p>
-                        <a href="#" class="download-btn">Download from Drive</a>
+                        <button class="download-btn" onclick="downloadProject('data-analytics')">
+                            <div class="loading" id="loading-data-analytics"></div>
+                            <span>Download from Drive</span>
+                        </button>
                     </div>
                 </div>
 
@@ -466,7 +532,10 @@
                     <div class="project-content">
                         <h3>Software Solutions</h3>
                         <p>Custom software solutions and automation tools for various business and personal needs.</p>
-                        <a href="#" class="download-btn">Download from Drive</a>
+                        <button class="download-btn" onclick="downloadProject('software-solutions')">
+                            <div class="loading" id="loading-software-solutions"></div>
+                            <span>Download from Drive</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -545,6 +614,92 @@
     </footer>
 
     <script>
+        // Google Drive file IDs - Replace these with your actual Google Drive file IDs
+        const driveFiles = {
+            'mobile-templates': '1Lgvd30xBZbog-GmgfJ0IBhUAxXVNIMYX', // Example file ID
+            'web-kits': '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+            'design-resources': '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+            'dev-tools': '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+            'data-analytics': '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+            'software-solutions': '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
+        };
+
+        // Function to show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Function to download project from Google Drive
+        function downloadProject(projectId) {
+            const loadingSpinner = document.getElementById(`loading-${projectId}`);
+            const button = document.querySelector(`button[onclick="downloadProject('${projectId}')"]`);
+            
+            // Show loading state
+            loadingSpinner.style.display = 'inline-block';
+            button.style.pointerEvents = 'none';
+            button.style.opacity = '0.7';
+            
+            // Show notification
+            showNotification('Initiating download from Google Drive...');
+            
+            // Get the file ID from the driveFiles object
+            const fileId = driveFiles[projectId];
+            
+            if (!fileId) {
+                showNotification('File not found. Please contact support.');
+                resetButton(projectId);
+                return;
+            }
+            
+            // Create the direct download URL
+            const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+            
+            // Simulate a brief delay for better UX
+            setTimeout(() => {
+                // Create a temporary anchor element to trigger download
+                const downloadLink = document.createElement('a');
+                downloadLink.href = downloadUrl;
+                downloadLink.download = ''; // This will use the original filename
+                downloadLink.target = '_blank';
+                
+                // Add to DOM, click, and remove
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                
+                // Reset button state
+                resetButton(projectId);
+                
+                // Show success notification
+                showNotification('Download started! Check your downloads folder.');
+            }, 1500);
+        }
+
+        // Function to reset button state
+        function resetButton(projectId) {
+            const loadingSpinner = document.getElementById(`loading-${projectId}`);
+            const button = document.querySelector(`button[onclick="downloadProject('${projectId}')"]`);
+            
+            loadingSpinner.style.display = 'none';
+            button.style.pointerEvents = 'auto';
+            button.style.opacity = '1';
+        }
+
+        // Alternative function for folder downloads (if you prefer folder links)
+        function downloadFolder(folderId) {
+            const folderUrl = `https://drive.google.com/drive/folders/${folderId}`;
+            window.open(folderUrl, '_blank');
+            showNotification('Google Drive folder opened in new tab');
+        }
+
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -574,7 +729,7 @@
         // Form submission handler
         document.querySelector('form').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert('Thank you for your message! We will get back to you soon.');
+            showNotification('Thank you for your message! We will get back to you soon.');
             this.reset();
         });
 
@@ -587,6 +742,13 @@
             card.addEventListener('mouseleave', function() {
                 this.style.transform = 'translateY(0) scale(1)';
             });
+        });
+
+        // Handle download errors
+        window.addEventListener('error', function(e) {
+            if (e.target.tagName === 'A') {
+                showNotification('Download failed. Please try again or contact support.');
+            }
         });
     </script>
 </body>
