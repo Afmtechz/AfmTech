@@ -16,8 +16,9 @@ A modern, professional website for AFM Tech - a platform for downloading project
 
 ```
 afm-tech-website/
-├── index.html          # Main HTML file
-├── README.md           # This file
+├── index.html                 # Main HTML file
+├── blog_section.html          # Blog section HTML file
+├── README.md                  # This file
 └── assets/
     ├── css/            # (inline CSS in HTML)
     ├── js/             # (inline JavaScript in HTML)
@@ -51,7 +52,7 @@ afm-tech-website/
 ### HTML Structure
 - Semantic HTML5 elements
 - Accessibility-friendly markup
-- SEO-optimized structure
+- SEO-optimised structure
 - Mobile viewport meta tag
 
 ### CSS Features
@@ -59,7 +60,7 @@ afm-tech-website/
 - CSS animations and transitions
 - CSS custom properties (variables)
 - Media queries for responsiveness
-- Backdrop-filter for glass effects
+- Backdrop filter for glass effects
 
 ### JavaScript Functionality
 - Smooth scrolling navigation
@@ -77,8 +78,8 @@ afm-tech-website/
 ## 🛠️ Setup Instructions
 
 1. **Clone or Download**: Get the HTML file
-2. **Open in Browser**: Simply open `index.html` in any modern web browser
-3. **Customize Content**: Edit the HTML to add your own projects and contact information
+2. **Open in Browser**: Open `index.html` in any modern web browser
+3. **Customise Content**: Edit the HTML to add your projects and contact information
 4. **Deploy**: Upload to any web hosting service
 
 ## 📝 Customization Guide
@@ -131,7 +132,7 @@ afm-tech-website/
 - Form validation on client-side (add server-side validation for production)
 - No external script inclusions
 - Safe CSS animations and transitions
-- HTTPS recommended for production deployment
+- HTTPS is recommended for production deployment
 
 ## 📋 Browser Support
 
@@ -152,7 +153,7 @@ afm-tech-website/
 ### Traditional Hosting
 - Any web hosting service
 - Upload the HTML file to the root directory
-- Configure domain and SSL certificate
+- Configure the domain and SSL certificate
 
 ## 📞 Support & Maintenance
 
@@ -171,7 +172,6 @@ afm-tech-website/
 ## 🎯 Future Enhancements
 
 ### Potential Features
-- Blog section for tech articles
 - User authentication system
 - Project download tracking
 - Search functionality
@@ -179,7 +179,7 @@ afm-tech-website/
 - Dark/light theme toggle
 
 ### Technical Improvements
-- Add service worker for offline functionality
+- Add a service worker for offline functionality
 - Implement lazy loading for images
 - Add more advanced animations
 - Integrate with Google Analytics
