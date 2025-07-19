@@ -700,5 +700,166 @@
         // Initialize
         updatePagination();
     </script>
+<a>#include <stdio.h>
+#include <stdlib.h>
+#define MAX 4
+#define MIN 2
+
+typedef struct btreeNode {
+    int val[MAX + 1], count;
+    struct btreeNode *link[MAX + 1];
+} Node;
+Node *root;
+
+Node* createNode(int key, Node *child) {
+    Node *n = (Node*)malloc(sizeof(Node));
+    n->val[1] = key; n->count = 1;
+    n->link[0] = root; n->link[1] = child;
+    return n;
+}
+
+void addToNode(int key, int p, Node *n, Node *child) {
+    int j = n->count;
+    while (j > p) { n->val[j + 1] = n->val[j]; n->link[j + 1] = n->link[j]; j--; }
+    n->val[j + 1] = key; n->link[j + 1] = child; n->count++;
+}
+
+void splitNode(int key, int *pkey, int p, Node *n, Node *child, Node **newNode) {
+    int median = (p > MIN) ? MIN + 1 : MIN;
+    *newNode = (Node*)malloc(sizeof(Node));
+    for (int j = median + 1; j <= MAX; j++) {
+        (*newNode)->val[j - median] = n->val[j];
+        (*newNode)->link[j - median] = n->link[j];
+    }
+    n->count = median; (*newNode)->count = MAX - median;
+    if (p <= MIN) addToNode(key, p, n, child);
+    else addToNode(key, p - median, *newNode, child);
+    *pkey = n->val[n->count];
+    (*newNode)->link[0] = n->link[n->count--];
+}
+
+int setVal(int key, int *pkey, Node *n, Node **child) {
+    if (!n) { *pkey = key; *child = NULL; return 1; }
+    int p = 0;
+    if (key >= n->val[1]) {
+        for (p = n->count; (key < n->val[p] && p > 1); p--);
+        if (key == n->val[p]) { printf("Duplicates not allowed\n"); return 0; }
+    }
+    if (setVal(key, pkey, n->link[p], child)) {
+        if (n->count < MAX) addToNode(*pkey, p, n, *child);
+        else { splitNode(*pkey, pkey, p, n, *child, child); return 1; }
+    }
+    return 0;
+}
+
+void insertion(int key) {
+    int i; Node *child;
+    if (setVal(key, &i, root, &child)) root = createNode(i, child);
+}
+
+void copySuccessor(Node *n, int p) {
+    Node *d = n->link[p];
+    for (; d->link[0] != NULL;) d = d->link[0];
+    n->val[p] = d->val[1];
+}
+
+void removeVal(Node *n, int p) {
+    for (int i = p + 1; i <= n->count; i++) {
+        n->val[i - 1] = n->val[i]; n->link[i - 1] = n->link[i];
+    }
+    n->count--;
+}
+
+void rightShift(Node *n, int p) {
+    Node *x = n->link[p];
+    for (int j = x->count; j > 0; j--) { x->val[j + 1] = x->val[j]; x->link[j + 1] = x->link[j]; }
+    x->val[1] = n->val[p]; x->link[1] = x->link[0]; x->count++;
+    x = n->link[p - 1]; n->val[p] = x->val[x->count];
+    n->link[p] = x->link[x->count--];
+}
+
+void leftShift(Node *n, int p) {
+    Node *x = n->link[p - 1]; x->count++;
+    x->val[x->count] = n->val[p]; x->link[x->count] = n->link[p]->link[0];
+    x = n->link[p]; n->val[p] = x->val[1]; x->link[0] = x->link[1]; x->count--;
+    for (int j = 1; j <= x->count; j++) { x->val[j] = x->val[j + 1]; x->link[j] = x->link[j + 1]; }
+}
+
+void mergeNodes(Node *n, int p) {
+    Node *x1 = n->link[p], *x2 = n->link[p - 1];
+    x2->val[++x2->count] = n->val[p]; x2->link[x2->count] = x1->link[0];
+    for (int j = 1; j <= x1->count; j++) {
+        x2->val[++x2->count] = x1->val[j]; x2->link[x2->count] = x1->link[j];
+    }
+    for (int j = p; j < n->count; j++) { n->val[j] = n->val[j + 1]; n->link[j] = n->link[j + 1]; }
+    n->count--; free(x1);
+}
+
+void adjustNode(Node *n, int p) {
+    if (!p) {
+        if (n->link[1]->count > MIN) leftShift(n, 1); else mergeNodes(n, 1);
+    } else {
+        if (n->link[p - 1]->count > MIN) rightShift(n, p);
+        else if (p < n->count && n->link[p + 1]->count > MIN) leftShift(n, p + 1);
+        else mergeNodes(n, p);
+    }
+}
+
+int delVal(int key, Node *n) {
+    if (!n) return 0;
+    int p = 0, flag = 0;
+    if (key >= n->val[1]) {
+        for (p = n->count; (key < n->val[p] && p > 1); p--);
+        if (key == n->val[p]) flag = 1;
+    }
+    if (flag) {
+        if (n->link[p]) {
+            copySuccessor(n, p);
+            if (!delVal(n->val[p], n->link[p])) printf("Not present\n");
+        } else removeVal(n, p);
+    } else flag = delVal(key, n->link[p]);
+    if (n->link[p] && n->link[p]->count < MIN) adjustNode(n, p);
+    return flag;
+}
+
+void deletion(int key, Node *n) {
+    if (!delVal(key, n)) { printf("Value %d not in tree\n", key); return; }
+    if (n->count == 0) { Node *tmp = n; root = n->link[0]; free(tmp); }
+    else root = n;
+}
+
+void search(int key, Node *n) {
+    if (!n) { printf("Key %d not found\n", key); return; }
+    int p = 0;
+    if (key >= n->val[1]) {
+        for (p = n->count; (key < n->val[p] && p > 1); p--);
+        if (key == n->val[p]) { printf("Key %d is present\n", key); return; }
+    }
+    search(key, n->link[p]);
+}
+
+void traversal(Node *n) {
+    if (n) {
+        int i;
+        for (i = 0; i < n->count; i++) { traversal(n->link[i]); printf("%d ", n->val[i + 1]); }
+        traversal(n->link[i]);
+    }
+}
+
+int main() {
+    int key, ch;
+    while (1) {
+        printf("\n1.Insert 2.Delete 3.Search 4.Traverse 5.Exit\n> ");
+        scanf("%d", &ch);
+        if (ch == 1) { printf("Key: "); scanf("%d", &key); insertion(key); }
+        else if (ch == 2) { printf("Key: "); scanf("%d", &key); deletion(key, root); }
+        else if (ch == 3) { printf("Key: "); scanf("%d", &key); search(key, root); }
+        else if (ch == 4) { traversal(root); }
+        else if (ch == 5) { exit(0); }
+        else { printf("Invalid option\n"); }
+    }
+    return 0;
+}
+</a>
 </body>
 </html>
