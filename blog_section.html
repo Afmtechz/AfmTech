@@ -700,5 +700,110 @@
         // Initialize
         updatePagination();
     </script>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Heart Equation Graph</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(to right, violet, orange);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    canvas {
+      border: 1px solid #444;
+      background: black;
+      display: block;
+      margin: 20px auto;
+    }
+
+    .slider-container {
+      margin-top: 20px;
+    }
+
+    input[type=range] {
+      width: 300px;
+    }
+
+    label {
+      font-size: 1.2rem;
+      color: #ff9;
+    }
+
+    #kValue {
+      color: #ff79c6;
+    }
+
+    .equation {
+      font-family: monospace;
+      color: #ffaaff;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Heart Equation</h1>
+  <canvas id="heartCanvas" width="600" height="600"></canvas>
+
+  <div class="slider-container">
+    <label>Adjust k: <span id="kValue">59.79</span></label><br>
+    <input type="range" min="10" max="100" step="0.01" value="59.79" id="kSlider">
+  </div>
+
+  <div class="equation">
+    y = |x|<sup>2/3</sup> + 0.9·sin(k·x)·√(3 - x²)
+  </div>
+
+  <script>
+    const canvas = document.getElementById('heartCanvas');
+    const ctx = canvas.getContext('2d');
+    const kSlider = document.getElementById('kSlider');
+    const kValueDisplay = document.getElementById('kValue');
+
+    function drawHeart(k) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = '#ff69b4';
+      ctx.lineWidth = 1;
+
+      ctx.beginPath();
+      for (let i = -3; i <= 3; i += 0.005) {
+        const x = i;
+        const y = Math.pow(Math.abs(x), 2 / 3) + 0.9 * Math.sin(k * x) * Math.sqrt(Math.max(0, 3 - x * x));
+        const canvasX = canvas.width / 2 + x * 100;
+        const canvasY = canvas.height / 2 - y * 100;
+        if (i === -3) {
+          ctx.moveTo(canvasX, canvasY);
+        } else {
+          ctx.lineTo(canvasX, canvasY);
+        }
+      }
+      ctx.stroke();
+    }
+
+    kSlider.addEventListener('input', () => {
+      const k = parseFloat(kSlider.value);
+      kValueDisplay.textContent = k.toFixed(2);
+      drawHeart(k);
+    });
+
+    // Initial draw
+    drawHeart(parseFloat(kSlider.value));
+  </script>
+</body>
+</html>
+    
 </body>
 </html>
